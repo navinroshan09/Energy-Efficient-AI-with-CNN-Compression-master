@@ -213,13 +213,22 @@ metrics_df = load_metrics_csv()
 if metrics_df is None or metrics_df.empty:
     st.info("No metrics file found at `reports/metrics.csv`. Run the benchmark script to generate it.")
 else:
+    # calculate energy & sustainability metrics if not present
+    if "energy_mj" not in metrics_df.columns:
+        metrics_df["energy_mj"] = metrics_df["latency_ms"] * 30.0  # Assumed 30W TDP
+    if "co2_ug" not in metrics_df.columns:
+        metrics_df["co2_ug"] = metrics_df["energy_mj"] * 0.132     # Assumed 475 gCO2/kWh
+    if "sustainability_score" not in metrics_df.columns:
+        # Higher is better: proportional to accuracy, inversely to energy and size
+        metrics_df["sustainability_score"] = (metrics_df["accuracy"] / (metrics_df["energy_mj"] * metrics_df["size_mb"])) * 1000
+
     # pretty formatting
     df_show = metrics_df.copy()
-    for col in ["accuracy","size_mb","latency_ms","throughput_img_s"]:
+    for col in ["accuracy","size_mb","latency_ms","throughput_img_s","energy_mj","co2_ug","sustainability_score"]:
         if col in df_show.columns:
             if col == "accuracy":
                 df_show[col] = df_show[col].map(lambda v: f"{v:.2f}")
-            elif col in ("size_mb", "latency_ms"):
+            elif col in ("size_mb", "latency_ms", "energy_mj", "co2_ug", "sustainability_score"):
                 df_show[col] = df_show[col].map(lambda v: f"{v:.2f}")
             else:
                 df_show[col] = df_show[col].map(lambda v: f"{v:.1f}")
@@ -291,6 +300,43 @@ else:
         plt.xticks(rotation=45, ha='right')
         fig5.tight_layout()
         st.pyplot(fig5, clear_figure=True)
+        
+        # Add Energy Consumption Comparison
+        st.markdown("**Energy Consumption**")
+        fig6 = plt.figure(figsize=(8, 4))
+        ax6 = fig6.add_subplot(111)
+        e_vals = metrics_df["energy_mj"].astype(float).tolist()
+        ax6.bar(x_labels, e_vals, color="#17a2b8")
+        ax6.set_ylabel("Energy (mJ) - Lower is better")
+        ax6.set_title("Energy Consumption per Inference")
+        plt.xticks(rotation=45, ha='right')
+        fig6.tight_layout()
+        st.pyplot(fig6, clear_figure=True)
+        
+        # Add CO2 Emission Comparison
+        st.markdown("**CO2 Emissions**")
+        fig7 = plt.figure(figsize=(8, 4))
+        ax7 = fig7.add_subplot(111)
+        c_vals = metrics_df["co2_ug"].astype(float).tolist()
+        ax7.bar(x_labels, c_vals, color="#6c757d")
+        ax7.set_ylabel("CO2 (µg) - Lower is better")
+        ax7.set_title("CO2 Emissions per Inference")
+        plt.xticks(rotation=45, ha='right')
+        fig7.tight_layout()
+        st.pyplot(fig7, clear_figure=True)
+        
+        # Add Sustainability Score Comparison
+        st.markdown("**Sustainability Score**")
+        fig8 = plt.figure(figsize=(8, 4))
+        ax8 = fig8.add_subplot(111)
+        ss_vals = metrics_df["sustainability_score"].astype(float).tolist()
+        ax8.bar(x_labels, ss_vals, color="#20c997")
+        ax8.set_ylabel("Score - Higher is better")
+        ax8.set_title("Overall Sustainability Score")
+        plt.xticks(rotation=45, ha='right')
+        fig8.tight_layout()
+        st.pyplot(fig8, clear_figure=True)
+
         
     except Exception as e:
         st.caption(f"(Plot unavailable: {e})")
