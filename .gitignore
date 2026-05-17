@@ -1,0 +1,49 @@
+# Python cache & build
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Virtual environment
+.venv/
+env/
+venv/
+ENV/
+
+# IDE/Editor configs
+.vscode/
+.idea/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# Datasets & temporary data
+data/
+*.zip
+*.tar
+*.tar.gz
+
+
+# Logs
+logs/
+*.log
+
+# Reports (generated files, keep CSV if needed)
+reports/*.csv
+reports/*.png
+reports/*.pdf
+
+# Streamlit cache
+.streamlit/
+
+# Benchmark results (large repeats)
+benchmark_results/
