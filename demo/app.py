@@ -240,6 +240,58 @@ else:
         ax.set_ylabel("Accuracy (%)")
         ax.set_title("Accuracy vs Latency (bubble ~ size MB)")
         st.pyplot(fig, clear_figure=True)
+        
+        # --- New Section: Sustainable AI Analysis ---
+        st.subheader("Sustainable AI Analysis")
+        st.markdown("**Accuracy Comparison**")
+        fig2 = plt.figure(figsize=(8, 4))
+        ax2 = fig2.add_subplot(111)
+        # Assuming we want a bar chart comparing models
+        x_labels = metrics_df["model_ckpt"].tolist()
+        y_vals = metrics_df["accuracy"].astype(float).tolist()
+        ax2.bar(x_labels, y_vals, color="#0088cc")
+        ax2.set_ylabel("Accuracy (%)")
+        ax2.set_title("Model Accuracy Comparison")
+        plt.xticks(rotation=45, ha='right')
+        fig2.tight_layout()
+        st.pyplot(fig2, clear_figure=True)
+        
+        # Add Model Size Comparison
+        st.markdown("**Model Size Comparison**")
+        fig3 = plt.figure(figsize=(8, 4))
+        ax3 = fig3.add_subplot(111)
+        s_vals = metrics_df["size_mb"].astype(float).tolist()
+        ax3.bar(x_labels, s_vals, color="#28a745")
+        ax3.set_ylabel("Size (MB) - Lower is better")
+        ax3.set_title("Model Size Comparison")
+        plt.xticks(rotation=45, ha='right')
+        fig3.tight_layout()
+        st.pyplot(fig3, clear_figure=True)
+        
+        # Add Latency Comparison
+        st.markdown("**Latency Comparison**")
+        fig4 = plt.figure(figsize=(8, 4))
+        ax4 = fig4.add_subplot(111)
+        l_vals = metrics_df["latency_ms"].astype(float).tolist()
+        ax4.bar(x_labels, l_vals, color="#ffc107")
+        ax4.set_ylabel("Latency (ms) - Lower is better")
+        ax4.set_title("Model Latency Comparison")
+        plt.xticks(rotation=45, ha='right')
+        fig4.tight_layout()
+        st.pyplot(fig4, clear_figure=True)
+        
+        # Add Throughput Comparison
+        st.markdown("**Throughput Comparison**")
+        fig5 = plt.figure(figsize=(8, 4))
+        ax5 = fig5.add_subplot(111)
+        t_vals = metrics_df["throughput_img_s"].astype(float).tolist()
+        ax5.bar(x_labels, t_vals, color="#dc3545")
+        ax5.set_ylabel("Throughput (img/s) - Higher is better")
+        ax5.set_title("Model Throughput Comparison")
+        plt.xticks(rotation=45, ha='right')
+        fig5.tight_layout()
+        st.pyplot(fig5, clear_figure=True)
+        
     except Exception as e:
         st.caption(f"(Plot unavailable: {e})")
 
